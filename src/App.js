@@ -1,12 +1,18 @@
-import React, { Component } from 'react';
-import Navbar from "./components/Navbar"
+import React, { Component } from "react";
+import { Switch, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Admin from "./components/Admin";
+import Home from "./components/Home";
 
 class App extends Component {
   render() {
     return (
-      <Navbar>
-        <p>main content</p>
-      </Navbar>
+      <Switch>
+        <Navbar>
+          <Route path="/admin" exact component={Admin} />
+          <Route path="/" exact component={Home} />
+        </Navbar>
+      </Switch>
     );
   }
 }
