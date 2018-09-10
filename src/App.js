@@ -5,6 +5,13 @@ import Admin from "./components/Admin";
 import Home from "./components/Home";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      authUser: null
+    };
+  }
+
   render() {
     return (
       <Switch>

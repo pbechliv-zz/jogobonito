@@ -1,9 +1,25 @@
 import React from "react";
+import firebase from "../firebase";
 
 class Admin extends React.Component {
-  handleLogin(e) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      password: ""
+    };
+  }
+
+  async handleLogin(e) {
     e.preventDefault();
-    console.log(e);
+    const user = await firebase
+      .auth()
+      .signInWithEmailAndPassword(this.state.email, this.state.password);
+    console.log(user);
+  }
+
+  handleInput(field, value) {
+    this.setState({ [field]: value });
   }
 
   render() {
@@ -18,13 +34,23 @@ class Admin extends React.Component {
                 <div className="field">
                   <label className="label">Email</label>
                   <div className="control">
-                    <input className="input" type="email" />
+                    <input
+                      className="input"
+                      type="email"
+                      value={this.state.email}
+                      onChange={e => this.handleInput("email", e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="field">
                   <label className="label">Password</label>
                   <div className="control">
-                    <input className="input" type="password" />
+                    <input
+                      className="input"
+                      type="password"
+                      value={this.state.password}
+                      onChange={e => this.handleInput("password", e.target.value)}
+                    />
                   </div>
                 </div>
                 <input type="submit" className="button is-primary" value="Submit" />
