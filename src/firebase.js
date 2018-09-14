@@ -1,8 +1,8 @@
 // todo: why app?
 import firebase from "firebase/app";
 import "firebase/auth";
-import "firebase/storage";
-import "firebase/firestore";
+// import "firebase/storage";
+// import "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCGYk-W_cIzvE2_kvJ8-JiwG9Era0LMmCo",
@@ -18,6 +18,6 @@ firebase.initializeApp(firebaseConfig);
 firebase.firestore().settings({
   timestampsInSnapshots: true
 });
-firebase.firestore().enablePersistence();
+// firebase.firestore().enablePersistence();
 
 export default firebase;
