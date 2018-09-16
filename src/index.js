@@ -8,7 +8,7 @@ import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 import "bulma/css/bulma.min.css";
 import store from "./store";
-import firebase from "firebase";
+import firebase from "./firebase";
 import { setAuthUser } from "./store/actions";
 
 const app = (

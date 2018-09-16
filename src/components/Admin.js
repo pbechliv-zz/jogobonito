@@ -25,7 +25,7 @@ class Admin extends React.Component {
     return (
       <div className="hero">
         <div className="hero-body">
-          <h1 className="title">Διαχείρηση Jogo Bonito</h1>
+          <h1 className="title">Διαχείριση Jogo Bonito</h1>
           {this.props.authUser && (
             <h2 className="subtitle">Χρήστης: {this.props.authUser.email}</h2>
           )}
