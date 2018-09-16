@@ -1,15 +1,19 @@
+import * as types from "../types";
+
 const INITIAL_STATE = {
   authUser: null
 };
 
-const setAuthUser = (state, action) => ({
-  ...state,
-  authUser: action.authUser
-});
+const setAuthUser = (state, action) => {
+  return {
+    ...state,
+    authUser: action.authUser
+  };
+};
 
 function authReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
-    case "AUTH_USER_SET": {
+    case types.SET_AUTH_USER: {
       return setAuthUser(state, action);
     }
     default:

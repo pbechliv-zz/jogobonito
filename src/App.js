@@ -5,18 +5,16 @@ import firebase from "firebase";
 import Navbar from "./components/Navbar";
 import Admin from "./components/Admin";
 import Home from "./components/Home";
+import { setAuthUser } from "./store/actions";
 
 class App extends Component {
   componentDidMount() {
     firebase.auth().onAuthStateChanged(authUser => {
-      console.log("onAuthStateChanged")
       if (authUser) this.props.setAuthUser(authUser);
     });
   }
 
   render() {
-    console.log(this.props);
-
     return (
       <Switch>
         <Navbar>
@@ -32,10 +30,7 @@ const mapStateToProps = state => ({
   authUser: state.authState.authUser
 });
 
-const mapDispatchToProps = dispatch => ({
-  setAuthUser: authUser => dispatch({ type: "SET_AUTH_USER", authUser })
-});
-
+const mapDispatchToProps = { setAuthUser };
 export default connect(
   mapStateToProps,
   mapDispatchToProps

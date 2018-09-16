@@ -1,5 +1,7 @@
 import React from "react";
 import firebase from "../firebase";
+import { connect } from "react-redux";
+import PostForm from "./PostForm";
 
 class Admin extends React.Component {
   constructor(props) {
@@ -12,10 +14,7 @@ class Admin extends React.Component {
 
   async handleLogin(e) {
     e.preventDefault();
-    const user = await firebase
-      .auth()
-      .signInWithEmailAndPassword(this.state.email, this.state.password);
-    console.log(user);
+    await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password);
   }
 
   handleInput(field, value) {
@@ -26,36 +25,45 @@ class Admin extends React.Component {
     return (
       <div className="hero">
         <div className="hero-body">
-          <h1 className="title">Administration Jogo Bonito</h1>
+          <h1 className="title">Διαχείρηση Jogo Bonito</h1>
+          {this.props.authUser && (
+            <h2 className="subtitle">Χρήστης: {this.props.authUser.email}</h2>
+          )}
           <hr />
           <div className="columns">
-            <div className="column is-4 is-offset-4">
-              <form onSubmit={e => this.handleLogin(e)}>
-                <div className="field">
-                  <label className="label">Email</label>
-                  <div className="control">
-                    <input
-                      className="input"
-                      type="email"
-                      value={this.state.email}
-                      onChange={e => this.handleInput("email", e.target.value)}
-                    />
+            {!this.props.authUser ? (
+              <div className="column is-4 is-offset-4">
+                <form onSubmit={e => this.handleLogin(e)}>
+                  <div className="field">
+                    <label className="label">Email</label>
+                    <div className="control">
+                      <input
+                        className="input"
+                        type="email"
+                        value={this.state.email}
+                        onChange={e => this.handleInput("email", e.target.value)}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="field">
-                  <label className="label">Password</label>
-                  <div className="control">
-                    <input
-                      className="input"
-                      type="password"
-                      value={this.state.password}
-                      onChange={e => this.handleInput("password", e.target.value)}
-                    />
+                  <div className="field">
+                    <label className="label">Password</label>
+                    <div className="control">
+                      <input
+                        className="input"
+                        type="password"
+                        value={this.state.password}
+                        onChange={e => this.handleInput("password", e.target.value)}
+                      />
+                    </div>
                   </div>
-                </div>
-                <input type="submit" className="button is-primary" value="Submit" />
-              </form>
-            </div>
+                  <input type="submit" className="button is-primary" value="Submit" />
+                </form>
+              </div>
+            ) : (
+              <div className="column is-6 is-offset-3">
+                <PostForm />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -63,4 +71,10 @@ class Admin extends React.Component {
   }
 }
 
-export default Admin;
+const mapStateToProps = state => {
+  return {
+    authUser: state.authState.authUser
+  };
+};
+
+export default connect(mapStateToProps)(Admin);
