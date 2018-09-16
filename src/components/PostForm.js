@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { tags } from "../tags2";
+import { tags } from "../tags";
 import _ from "lodash";
 
 class PostForm extends React.Component {
