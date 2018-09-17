@@ -5,8 +5,10 @@
   "dependencies": {
     "@types/react-select": "^2.0.3",
     "bulma": "^0.7.1",
+    "draft-js": "^0.10.5",
     "firebase": "^5.4.2",
     "lodash": "^4.17.11",
+    "pell": "^1.0.4",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
     "react-redux": "^5.0.7",

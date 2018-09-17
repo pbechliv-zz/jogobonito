@@ -2,6 +2,8 @@ import React from "react";
 import Select from "react-select";
 import { tags } from "../tags";
 import _ from "lodash";
+import pell from "pell";
+import "pell/dist/pell.min.css";
 
 class PostForm extends React.Component {
   constructor(props) {
@@ -15,7 +17,8 @@ class PostForm extends React.Component {
       subTagsValues: [],
       subSubTagsOptions: [],
       subSubTags: [],
-      subSubTagsValues: []
+      subSubTagsValues: [],
+      editorState: ""
     };
   }
 
@@ -78,6 +81,15 @@ class PostForm extends React.Component {
             </div>
           </div>
         )}
+        <div className="field">
+          <label className="label">Τίτλος</label>
+          <div className="control">
+            <Editor
+              editorState={this.state.editorState}
+              onChange={value => this.setState({ editorState: value })}
+            />
+          </div>
+        </div>
       </form>
     );
   }
