@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, withRouter } from "react-router-dom";
 
 class Navbar extends React.Component {
   state = {
@@ -16,7 +16,7 @@ class Navbar extends React.Component {
         <nav className="navbar is-fixed-top is-dark">
           <div className="container">
             <div className="navbar-brand">
-              <NavLink activeClassName="is-active" to="/" className="navbar-item">
+              <NavLink activeClassName="is-active" to="/" exact className="navbar-item">
                 Jogo Bonito
               </NavLink>
               <div
@@ -258,4 +258,4 @@ class Navbar extends React.Component {
   }
 }
 
-export default Navbar;
+export default withRouter(Navbar);
