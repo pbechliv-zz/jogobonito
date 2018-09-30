@@ -30,35 +30,48 @@ class Home extends React.Component {
       <div>
         <section className="hero is-primary">
           <div className="hero-body">
-            <div className="container">
+            <div className="container has-text-centered">
               <h3 className="title">Τελευταία άρθρα</h3>
-              {/* <h2 className="subtitle">
-              A simple container to divide your page into <strong>sections</strong>, like the one
-              you're currently reading
-            </h2> */}
             </div>
           </div>
         </section>
-        {this.state.posts.map((post, index) => (
-          <section key={`post-${index}`} className="section">
-            <div className="container">
-              {post.sections.map((section, index) => {
-                switch (section.type) {
-                  case "text" || "embed":
-                    return <div dangerouslySetInnerHTML={{ __html: section.value }} />;
-                  case "image":
-                    return (
-                      <figure className="image">
-                        <img src={section.value} alt="Δεν βρέθηκε η εικόνα..." />
-                      </figure>
-                    );
-                  default:
-                    return null;
-                }
-              })}
-            </div>
-          </section>
-        ))}
+        {this.state.posts.length > 0 ? (
+          this.state.posts.map((post, index1) => (
+            <section key={`post-${index1}`} className="section container">
+              <div className="box">
+                <div className="content has-text-centered">
+                  <img src={post.titlePhoto} alt="Δεν βρέθηκε η εικόνα..." width="800" />
+                  <h3 className="title">{post.title}</h3>
+                  {post.sections.map((section, index2) => {
+                    switch (section.type) {
+                      case "text":
+                      case "embed":
+                        return (
+                          <div
+                            key={`postsection-${index1}-${index2}`}
+                            dangerouslySetInnerHTML={{ __html: section.value }}
+                          />
+                        );
+                      case "image":
+                        return (
+                          <img
+                            key={`postsection-${index1}-${index2}`}
+                            src={section.value}
+                            alt="Δεν βρέθηκε η εικόνα..."
+                            width="600"
+                          />
+                        );
+                      default:
+                        return null;
+                    }
+                  })}
+                </div>
+              </div>
+            </section>
+          ))
+        ) : (
+          <p>Δεν υπάρχουν άρθρα αυτή τη στιγμή...</p>
+        )}
       </div>
     );
   }

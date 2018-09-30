@@ -49,7 +49,6 @@ class PostForm extends React.Component {
   }
 
   async handleTitlePhotoChange(image) {
-    console.log(image);
     this.setState({
       uploadingFile: true
     });
@@ -65,7 +64,6 @@ class PostForm extends React.Component {
       error => this.setState({ uploadingFile: false }),
       async () => {
         const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-        console.log("fileSnapshot", downloadURL);
         this.setState({
           titlePhotoUrl: downloadURL,
           uploadingFile: false
@@ -94,7 +92,6 @@ class PostForm extends React.Component {
       error => this.setState({ uploadingFile: false }),
       async () => {
         const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-        console.log("fileSnapshot", downloadURL);
         this.setState(prevState => {
           const newSections = [...prevState.sections];
           newSections[index] = {
@@ -149,7 +146,6 @@ class PostForm extends React.Component {
   }
 
   async handleSubmit(e) {
-    console.log("submitting");
     this.setState({ submitting: true });
     e.preventDefault();
     const newSections = this.state.sections.map(sec => ({
@@ -167,12 +163,11 @@ class PostForm extends React.Component {
       updatedAt: new Date()
     };
     const firestore = firebase.firestore();
-    const postRef = await firestore
+    await firestore
       .collection("posts")
       .doc()
       .set(data);
     this.setState({ submitting: false });
-    console.log(postRef);
   }
 
   renderSections() {
