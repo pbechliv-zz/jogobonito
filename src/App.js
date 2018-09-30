@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, withRouter } from "react-router-dom";
 import firebase from "./firebase";
 import Navbar from "./components/Navbar";
 import Admin from "./components/Admin";
@@ -16,12 +16,12 @@ class App extends Component {
 
   render() {
     return (
-      <Switch>
-        <Navbar>
+      <Navbar match={this.props.match}>
+        <Switch>
           <Route path="/admin" exact component={Admin} />
-          <Route path="/" exact component={Home} />
-        </Navbar>
-      </Switch>
+          <Route path="/" exact component={Home} />]
+        </Switch>
+      </Navbar>
     );
   }
 }
@@ -31,7 +31,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = { setAuthUser };
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(App)
+);

@@ -258,6 +258,14 @@ class Navbar extends React.Component {
               </div>
               {this.props.authUser && (
                 <div className="navbar-end">
+                  <NavLink
+                    activeClassName="is-active"
+                    className="navbar-item"
+                    to="/admin"
+                    onClick={() => this.toggleBurger()}
+                  >
+                    Διαχείρηση
+                  </NavLink>
                   <a className="navbar-item" href={null} onClick={() => this.handleLogout()}>
                     Αποσύνδεση
                   </a>

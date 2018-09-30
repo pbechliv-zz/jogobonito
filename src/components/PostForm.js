@@ -3,6 +3,7 @@ import Select from "react-select";
 import _ from "lodash";
 import Dropzone from "react-dropzone";
 import RichTextEditor from "react-rte";
+import cuid from "cuid";
 import { tags } from "../tags";
 import firebase from "../firebase";
 
@@ -11,9 +12,8 @@ class PostForm extends React.Component {
     super(props);
     this.state = {
       title: "",
-      titlePhoto: "",
       titlePhotoUrl: "",
-      titlePhotoUploadProgress: 0,
+      uploadProgress: 0,
       filteredTags: [],
       mainTags: [],
       mainTagsValues: [],
@@ -51,17 +51,16 @@ class PostForm extends React.Component {
   async handleTitlePhotoChange(image) {
     console.log(image);
     this.setState({
-      uploadingFile: true,
-      titlePhoto: image.preview
+      uploadingFile: true
     });
     const storage = firebase.storage();
-    const storageRef = storage.ref(image.name);
+    const storageRef = storage.ref(cuid());
     const uploadTask = storageRef.put(image);
     uploadTask.on(
       "state_changed",
       async snapshot => {
         const uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        this.setState({ titlePhotoUploadProgress: uploadProgress });
+        this.setState({ uploadProgress });
       },
       error => this.setState({ uploadingFile: false }),
       async () => {
@@ -78,7 +77,7 @@ class PostForm extends React.Component {
   async handleFileChange(file, index) {
     this.setState({ uploadingFile: true });
     const storage = firebase.storage();
-    const storageRef = storage.ref(file.name);
+    const storageRef = storage.ref(cuid());
     const uploadTask = storageRef.put(file);
     uploadTask.on(
       "state_changed",
@@ -87,10 +86,9 @@ class PostForm extends React.Component {
         this.setState(prevState => {
           const newSections = [...prevState.sections];
           newSections[index] = {
-            ...prevState.sections[index],
-            uploadProgress
+            ...prevState.sections[index]
           };
-          return { sections: newSections };
+          return { sections: newSections, uploadProgress };
         });
       },
       error => this.setState({ uploadingFile: false }),
@@ -101,8 +99,7 @@ class PostForm extends React.Component {
           const newSections = [...prevState.sections];
           newSections[index] = {
             ...prevState.sections[index],
-            value: downloadURL,
-            preview: file.preview
+            value: downloadURL
           };
           return { sections: newSections, uploadingFile: false };
         });
@@ -143,9 +140,7 @@ class PostForm extends React.Component {
             ...prevState.sections,
             {
               type,
-              value: "",
-              uploadProgress: 0,
-              preview: ""
+              value: ""
             }
           ]
         }));
@@ -233,6 +228,7 @@ class PostForm extends React.Component {
         case "image":
           return (
             <Dropzone
+              accept="image/jpg,image/png"
               key={`section-${index}`}
               style={{ position: "relative" }}
               onDrop={files => this.handleFileChange(files[0], index)}
@@ -252,14 +248,7 @@ class PostForm extends React.Component {
                   </label>
                 </div>
               </div>
-              {this.state.uploadingFile && (
-                <progress
-                  className="progress is-primary"
-                  value={this.state.sections[index].uploadProgress}
-                  max="100"
-                />
-              )}
-              <img src={this.state.sections[index].preview} alt="" />
+              <img src={this.state.sections[index].value} alt="" />
             </Dropzone>
           );
       }
@@ -287,6 +276,7 @@ class PostForm extends React.Component {
           </div>
         </div>
         <Dropzone
+          accept="image/jpg,image/png"
           style={{ position: "relative" }}
           onDrop={files => this.handleTitlePhotoChange(files[0])}
           multiple={false}
@@ -305,16 +295,12 @@ class PostForm extends React.Component {
               </label>
             </div>
           </div>
-          {this.state.uploadingFile && (
-            <progress
-              className="progress is-primary"
-              value={this.state.titlePhotoUploadProgress}
-              max="100"
-            />
-          )}
-          <img src={this.state.titlePhoto} alt="" />
+          <img src={this.state.titlePhotoUrl} alt="" />
         </Dropzone>
         {this.renderSections()}
+        {this.state.uploadingFile && (
+          <progress className="progress is-primary" value={this.state.uploadProgress} max="100" />
+        )}
         <div className="field is-grouped">
           <p className="control">
             <button
