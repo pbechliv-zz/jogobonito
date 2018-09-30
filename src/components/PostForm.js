@@ -24,7 +24,8 @@ class PostForm extends React.Component {
       subSubTags: [],
       subSubTagsValues: [],
       sections: [],
-      uploadingFile: false
+      uploadingFile: false,
+      submitting: false
     };
   }
 
@@ -47,11 +48,15 @@ class PostForm extends React.Component {
     this.setState({ subSubTags: value, subSubTagsValues });
   }
 
-  async handleTitlePhotoChange(file) {
-    this.setState({ uploadingFile: true });
+  async handleTitlePhotoChange(image) {
+    console.log(image);
+    this.setState({
+      uploadingFile: true,
+      titlePhoto: image.preview
+    });
     const storage = firebase.storage();
-    const storageRef = storage.ref(file.name);
-    const uploadTask = storageRef.put(file);
+    const storageRef = storage.ref(image.name);
+    const uploadTask = storageRef.put(image);
     uploadTask.on(
       "state_changed",
       async snapshot => {
@@ -64,7 +69,6 @@ class PostForm extends React.Component {
         console.log("fileSnapshot", downloadURL);
         this.setState({
           titlePhotoUrl: downloadURL,
-          titlePhoto: file.preview,
           uploadingFile: false
         });
       }
@@ -104,6 +108,76 @@ class PostForm extends React.Component {
         });
       }
     );
+  }
+
+  handleAddSection(type) {
+    switch (type) {
+      default:
+        return null;
+      case "text":
+        this.setState(prevState => ({
+          sections: [
+            ...prevState.sections,
+            {
+              type,
+              value: "",
+              editorValue: RichTextEditor.createEmptyValue()
+            }
+          ]
+        }));
+        break;
+      case "embed":
+        this.setState(prevState => ({
+          sections: [
+            ...prevState.sections,
+            {
+              type,
+              value: ""
+            }
+          ]
+        }));
+        break;
+      case "image":
+        this.setState(prevState => ({
+          sections: [
+            ...prevState.sections,
+            {
+              type,
+              value: "",
+              uploadProgress: 0,
+              preview: ""
+            }
+          ]
+        }));
+        break;
+    }
+  }
+
+  async handleSubmit(e) {
+    console.log("submitting");
+    this.setState({ submitting: true });
+    e.preventDefault();
+    const newSections = this.state.sections.map(sec => ({
+      type: sec.type,
+      value: sec.value
+    }));
+    const data = {
+      title: this.state.title,
+      titlePhoto: this.state.titlePhotoUrl,
+      sections: newSections,
+      mainTags: this.state.mainTagsValues,
+      subTags: this.state.subSubTagsValues,
+      subSubTags: this.state.subSubTagsValues,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    const firestore = firebase.firestore();
+    const postRef = await firestore
+      .collection("posts")
+      .doc()
+      .set(data);
+    this.setState({ submitting: false });
+    console.log(postRef);
   }
 
   renderSections() {
@@ -156,7 +230,7 @@ class PostForm extends React.Component {
               </div>
             </div>
           );
-        case "file":
+        case "image":
           return (
             <Dropzone
               key={`section-${index}`}
@@ -178,11 +252,13 @@ class PostForm extends React.Component {
                   </label>
                 </div>
               </div>
-              <progress
-                className="progress is-primary"
-                value={this.state.sections[index].uploadProgress}
-                max="100"
-              />
+              {this.state.uploadingFile && (
+                <progress
+                  className="progress is-primary"
+                  value={this.state.sections[index].uploadProgress}
+                  max="100"
+                />
+              )}
               <img src={this.state.sections[index].preview} alt="" />
             </Dropzone>
           );
@@ -190,75 +266,12 @@ class PostForm extends React.Component {
     });
   }
 
-  handleAddSection(type) {
-    switch (type) {
-      default:
-        return null;
-      case "text":
-        this.setState(prevState => ({
-          sections: [
-            ...prevState.sections,
-            {
-              type,
-              value: "",
-              editorValue: RichTextEditor.createEmptyValue()
-            }
-          ]
-        }));
-        break;
-      case "embed":
-        this.setState(prevState => ({
-          sections: [
-            ...prevState.sections,
-            {
-              type,
-              value: ""
-            }
-          ]
-        }));
-        break;
-      case "file":
-        this.setState(prevState => ({
-          sections: [
-            ...prevState.sections,
-            {
-              type,
-              value: "",
-              uploadProgress: 0,
-              preview: ""
-            }
-          ]
-        }));
-        break;
-    }
-  }
-
-  async handleSubmit(e) {
-    e.preventDefault();
-    const newSections = this.state.sections.map(sec => ({
-      type: sec.type,
-      value: sec.value
-    }));
-    const data = {
-      title: this.state.title,
-      titlePhoto: this.state.titlePhotoUrl,
-      sections: newSections,
-      mainTags: this.state.mainTagsValues,
-      subTags: this.state.subSubTagsValues,
-      subSubTags: this.state.subSubTagsValues,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    const firestore = firebase.firestore();
-    const postRef = await firestore
-      .collection("posts")
-      .doc()
-      .set(data);
-    console.log(postRef);
-  }
-
   render() {
-    console.log(this.state);
+    const isValid =
+      this.state.sections.length > 0 &&
+      !!this.state.title &&
+      !!this.state.titlePhotoUrl &&
+      !this.state.uploadingFile;
     return (
       <form onSubmit={e => this.handleSubmit(e)}>
         <div className="field">
@@ -292,11 +305,13 @@ class PostForm extends React.Component {
               </label>
             </div>
           </div>
-          <progress
-            className="progress is-primary"
-            value={this.state.titlePhotoUploadProgress}
-            max="100"
-          />
+          {this.state.uploadingFile && (
+            <progress
+              className="progress is-primary"
+              value={this.state.titlePhotoUploadProgress}
+              max="100"
+            />
+          )}
           <img src={this.state.titlePhoto} alt="" />
         </Dropzone>
         {this.renderSections()}
@@ -314,9 +329,9 @@ class PostForm extends React.Component {
             <button
               type="button"
               className="button is-link"
-              onClick={() => this.handleAddSection("file")}
+              onClick={() => this.handleAddSection("image")}
             >
-              Add file
+              Add image
             </button>
           </p>
           <p className="control">
@@ -359,7 +374,15 @@ class PostForm extends React.Component {
             </div>
           </div>
         )}
-        <input type="submit" className="button is-warning" value="Ανέβαστο" />
+        <p className="control">
+          <button
+            type="submit"
+            className={`button is-warning ${this.state.submitting && "is-loading"}`}
+            disabled={!isValid}
+          >
+            Ανέβαστο
+          </button>
+        </p>
       </form>
     );
   }

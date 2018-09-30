@@ -1,5 +1,7 @@
 import React from "react";
 import { NavLink, Link, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import firebase from "../firebase";
 
 class Navbar extends React.Component {
   state = {
@@ -8,6 +10,11 @@ class Navbar extends React.Component {
 
   toggleBurger() {
     this.setState(prevState => ({ burgerToggled: !prevState.burgerToggled }));
+  }
+
+  handleLogout() {
+    const auth = firebase.auth();
+    auth.signOut();
   }
 
   render() {
@@ -249,13 +256,24 @@ class Navbar extends React.Component {
                   </div>
                 </div>
               </div>
+              {this.props.authUser && (
+                <div className="navbar-end">
+                  <a className="navbar-item" href={null} onClick={() => this.handleLogout()}>
+                    Αποσύνδεση
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </nav>
-        <main className="container">{this.props.children}</main>
+        <main>{this.props.children}</main>
       </div>
     );
   }
 }
 
-export default withRouter(Navbar);
+const mapStateToProps = state => ({
+  authUser: state.authState.authUser
+});
+
+export default withRouter(connect(mapStateToProps)(Navbar));

@@ -10,7 +10,7 @@ import { setAuthUser } from "./store/actions";
 class App extends Component {
   componentDidMount() {
     firebase.auth().onAuthStateChanged(authUser => {
-      if (authUser) this.props.setAuthUser(authUser);
+      this.props.setAuthUser(authUser);
     });
   }
 
