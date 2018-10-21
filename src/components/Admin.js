@@ -24,7 +24,7 @@ class Admin extends React.Component {
   render() {
     return (
       <div className="hero">
-        <div className="hero-body">
+        <div className="hero-body has-text-centered">
           <h1 className="title">Διαχείριση Jogo Bonito</h1>
           {this.props.authUser && (
             <h2 className="subtitle">Χρήστης: {this.props.authUser.email}</h2>

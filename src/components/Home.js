@@ -45,9 +45,16 @@ class Home extends React.Component {
                   {post.sections.map((section, index2) => {
                     switch (section.type) {
                       case "text":
+                        return (
+                          <div
+                            key={`postsection-${index1}-${index2}`}
+                            dangerouslySetInnerHTML={{ __html: section.value }}
+                          />
+                        );
                       case "embed":
                         return (
                           <div
+                            className="video-container"
                             key={`postsection-${index1}-${index2}`}
                             dangerouslySetInnerHTML={{ __html: section.value }}
                           />

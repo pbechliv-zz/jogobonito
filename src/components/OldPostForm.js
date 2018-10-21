@@ -13,6 +13,7 @@ class PostForm extends React.Component {
     this.state = {
       title: "",
       titlePhotoUrl: "",
+      uploadProgress: 0,
       filteredTags: [],
       mainTags: [],
       mainTagsValues: [],
@@ -52,31 +53,55 @@ class PostForm extends React.Component {
       uploadingFile: true
     });
     const storage = firebase.storage();
-    const imageName = image.name + "_" + cuid();
-    const storageRef = storage.ref(imageName);
-    const uploadedImage = await storageRef.put(image);
-    const downloadURL = await uploadedImage.ref.getDownloadURL();
-    this.setState({
-      titlePhotoUrl: downloadURL,
-      uploadingFile: false
-    });
+    const storageRef = storage.ref(cuid());
+    const uploadTask = storageRef.put(image);
+    uploadTask.on(
+      "state_changed",
+      async snapshot => {
+        const uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        this.setState({ uploadProgress });
+      },
+      error => this.setState({ uploadingFile: false }),
+      async () => {
+        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+        this.setState({
+          titlePhotoUrl: downloadURL,
+          uploadingFile: false
+        });
+      }
+    );
   }
 
-  async handleFileChange(image, index) {
+  async handleFileChange(file, index) {
     this.setState({ uploadingFile: true });
     const storage = firebase.storage();
-    const imageName = image.name + "_" + cuid();
-    const storageRef = storage.ref(imageName);
-    const uploadedImage = await storageRef.put(image);
-    const downloadURL = await uploadedImage.ref.getDownloadURL();
-    this.setState(prevState => {
-      const newSections = [...prevState.sections];
-      newSections[index] = {
-        ...prevState.sections[index],
-        value: downloadURL
-      };
-      return { sections: newSections, uploadingFile: false };
-    });
+    const storageRef = storage.ref(cuid());
+    const uploadTask = storageRef.put(file);
+    uploadTask.on(
+      "state_changed",
+      async snapshot => {
+        const uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        this.setState(prevState => {
+          const newSections = [...prevState.sections];
+          newSections[index] = {
+            ...prevState.sections[index]
+          };
+          return { sections: newSections, uploadProgress };
+        });
+      },
+      error => this.setState({ uploadingFile: false }),
+      async () => {
+        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+        this.setState(prevState => {
+          const newSections = [...prevState.sections];
+          newSections[index] = {
+            ...prevState.sections[index],
+            value: downloadURL
+          };
+          return { sections: newSections, uploadingFile: false };
+        });
+      }
+    );
   }
 
   handleAddSection(type) {
@@ -95,18 +120,7 @@ class PostForm extends React.Component {
           ]
         }));
         break;
-      case "youtube":
-        this.setState(prevState => ({
-          sections: [
-            ...prevState.sections,
-            {
-              type,
-              value: ""
-            }
-          ]
-        }));
-        break;
-      case "twitter":
+      case "embed":
         this.setState(prevState => ({
           sections: [
             ...prevState.sections,
@@ -182,34 +196,10 @@ class PostForm extends React.Component {
               />
             </div>
           );
-        case "youtube":
+        case "embed":
           return (
             <div key={`section-${index}`} className="field">
-              <label className="label">Youtube video id</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  value={this.state.sections[index].value}
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.setState(prevState => {
-                      const newSections = [...prevState.sections];
-                      newSections[index] = {
-                        ...prevState.sections[index],
-                        value
-                      };
-                      return { sections: newSections };
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          );
-        case "twitter":
-          return (
-            <div key={`section-${index}`} className="field">
-              <label className="label">Twitter tweet id</label>
+              <label className="label">Youtube - Twitter embed tags</label>
               <div className="control">
                 <input
                   className="input"
@@ -246,7 +236,7 @@ class PostForm extends React.Component {
                       <span className="file-icon">
                         <i className="fas fa-upload" />
                       </span>
-                      <span className="file-label">Επίλεξε Εικόνα</span>
+                      <span className="file-label">Επίλεξε αρχείο</span>
                     </span>
                     <span className="file-name" />
                   </label>
@@ -267,11 +257,6 @@ class PostForm extends React.Component {
       !this.state.uploadingFile;
     return (
       <form onSubmit={e => this.handleSubmit(e)}>
-        {this.state.uploadingFile && (
-          <div className="message">
-            <div className="message-body">File uploading in progress...</div>
-          </div>
-        )}
         <div className="field">
           <label className="label">Τίτλος</label>
           <div className="control">
@@ -291,7 +276,7 @@ class PostForm extends React.Component {
           disabled={this.state.uploadingFile}
         >
           <div className="field">
-            <div className={`file has-name is-fullwidth`}>
+            <div className="file has-name is-fullwidth">
               <label className="file-label">
                 <span className="file-cta">
                   <span className="file-icon">
@@ -306,6 +291,9 @@ class PostForm extends React.Component {
           <img src={this.state.titlePhotoUrl} alt="" />
         </Dropzone>
         {this.renderSections()}
+        {this.state.uploadingFile && (
+          <progress className="progress is-primary" value={this.state.uploadProgress} max="100" />
+        )}
         <div className="field is-grouped">
           <p className="control">
             <button
@@ -329,18 +317,9 @@ class PostForm extends React.Component {
             <button
               type="button"
               className="button is-danger"
-              onClick={() => this.handleAddSection("youtube")}
+              onClick={() => this.handleAddSection("embed")}
             >
-              Add YouTube video
-            </button>
-          </p>
-          <p className="control">
-            <button
-              type="button"
-              className="button is-info"
-              onClick={() => this.handleAddSection("twitter")}
-            >
-              Add Twitter tweet
+              Add embedded media
             </button>
           </p>
         </div>
@@ -380,7 +359,7 @@ class PostForm extends React.Component {
             className={`button is-warning ${this.state.submitting && "is-loading"}`}
             disabled={!isValid}
           >
-            Upload
+            Ανέβαστο
           </button>
         </p>
       </form>

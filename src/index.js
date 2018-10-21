@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
 import App from "./App";
-import registerServiceWorker from "./registerServiceWorker";
+// import registerServiceWorker from "./registerServiceWorker";
 import "bulma/css/bulma.min.css";
 import store from "./store";
 import firebase from "./firebase";
@@ -24,4 +24,4 @@ firebase.auth().onAuthStateChanged(authUser => {
   ReactDOM.render(app, document.getElementById("root"));
 });
 
-registerServiceWorker();
+// registerServiceWorker();
