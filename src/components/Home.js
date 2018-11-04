@@ -37,16 +37,15 @@ class Home extends React.Component {
 
   getYoutubeWidth() {
     const width = this.youtubeDiv.current.clientWidth;
-    console.log(width)
+    console.log(width);
     if (width > 400) {
       return width * 0.6;
     } else {
-      return width
+      return width;
     }
   }
 
   render() {
-    // this.getYoutubeWidth()
     return (
       <div>
         <section className="hero is-primary">
@@ -63,14 +62,18 @@ class Home extends React.Component {
                 <div className="content has-text-centered">
                   <img src={post.titlePhoto} alt="Δεν βρέθηκε η εικόνα..." width="800" />
                   <h3 className="title">{post.title}</h3>
+                  <hr />
                   {post.sections.map((section, index2) => {
                     switch (section.type) {
                       case "text":
                         return (
-                          <div
-                            key={`postsection-${index1}-${index2}`}
-                            dangerouslySetInnerHTML={{ __html: section.value }}
-                          />
+                          <>
+                            <div
+                              key={`postsection-${index1}-${index2}`}
+                              dangerouslySetInnerHTML={{ __html: section.value }}
+                            />
+                            <hr />
+                          </>
                         );
                       case "twitter":
                         return (
@@ -80,6 +83,7 @@ class Home extends React.Component {
                               tweetId={section.value}
                               options={{ align: "center" }}
                             />
+                            <hr />
                           </div>
                         );
                       case "youtube":
@@ -98,12 +102,15 @@ class Home extends React.Component {
                         );
                       case "image":
                         return (
-                          <img
-                            key={`postsection-${index1}-${index2}`}
-                            src={section.value}
-                            alt="Δεν βρέθηκε η εικόνα..."
-                            width="600"
-                          />
+                          <>
+                            <img
+                              key={`postsection-${index1}-${index2}`}
+                              src={section.value}
+                              alt="Δεν βρέθηκε η εικόνα..."
+                              width="600"
+                            />
+                            <hr />
+                          </>
                         );
                       default:
                         return null;
