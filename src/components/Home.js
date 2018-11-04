@@ -1,12 +1,21 @@
 import React from "react";
+import { TwitterTweetEmbed } from "react-twitter-embed";
 import firebase from "../firebase";
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: []
+      posts: [],
+      youtubeWidth: 400
     };
+    this.youtubeDiv = React.createRef();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.posts !== this.state.posts && this.state.posts.length > 0) {
+      this.setState({ youtubeWidth: this.getYoutubeWidth() });
+    }
   }
 
   componentDidMount() {
@@ -19,13 +28,25 @@ class Home extends React.Component {
         const data = ref.docs.map(snap => snap.data());
         this.setState({ posts: data });
       });
+    console.log(this.youtubeDiv.current);
   }
 
   componentWillUnmount() {
     this.unsubscribe();
   }
 
+  getYoutubeWidth() {
+    const width = this.youtubeDiv.current.clientWidth;
+    console.log(width)
+    if (width > 400) {
+      return width * 0.6;
+    } else {
+      return width
+    }
+  }
+
   render() {
+    // this.getYoutubeWidth()
     return (
       <div>
         <section className="hero is-primary">
@@ -51,13 +72,29 @@ class Home extends React.Component {
                             dangerouslySetInnerHTML={{ __html: section.value }}
                           />
                         );
-                      case "embed":
+                      case "twitter":
                         return (
-                          <div
-                            className="video-container"
-                            key={`postsection-${index1}-${index2}`}
-                            dangerouslySetInnerHTML={{ __html: section.value }}
-                          />
+                          <div key={`postsection-${index1}-${index2}`}>
+                            <TwitterTweetEmbed
+                              key={`postsection-${index1}-${index2}`}
+                              tweetId={section.value}
+                              options={{ align: "center" }}
+                            />
+                          </div>
+                        );
+                      case "youtube":
+                        return (
+                          <div ref={this.youtubeDiv} key={`postsection-${index1}-${index2}`}>
+                            <iframe
+                              title={`postsection-${index1}-${index2}`}
+                              width={this.state.youtubeWidth}
+                              height={0.5625 * this.state.youtubeWidth}
+                              src={`https://www.youtube.com/embed/${section.value}`}
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </div>
                         );
                       case "image":
                         return (

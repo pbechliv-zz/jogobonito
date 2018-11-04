@@ -37,7 +37,7 @@ class Navbar extends React.Component {
               </div>
             </div>
             <div className={`navbar-menu ${this.state.burgerToggled && "is-active"}`}>
-              <div className="navbar-start ">
+              {/* <div className="navbar-start ">
                 <div className="navbar-item has-dropdown is-hoverable">
                   <NavLink
                     activeClassName="is-active"
@@ -255,7 +255,7 @@ class Navbar extends React.Component {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </div> */}
               {this.props.authUser && (
                 <div className="navbar-end">
                   <NavLink
