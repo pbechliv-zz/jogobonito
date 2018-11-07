@@ -7,16 +7,8 @@ class PostList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: [],
-      youtubeWidth: 400
+      posts: []
     };
-    this.youtubeDiv = React.createRef();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.posts !== this.state.posts && this.state.posts.length > 0) {
-      this.setState({ youtubeWidth: this.getYoutubeWidth() });
-    }
   }
 
   componentDidMount() {
@@ -32,16 +24,6 @@ class PostList extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribe();
-  }
-
-  getYoutubeWidth() {
-    const width = this.youtubeDiv.current.clientWidth;
-    console.log(width);
-    if (width > 400) {
-      return width * 0.6;
-    } else {
-      return width;
-    }
   }
 
   render() {
@@ -67,60 +49,18 @@ class PostList extends React.Component {
                   </div>
 
                   <hr />
-                  {post.sections.map((section, index2) => {
-                    switch (section.type) {
-                      case "text":
-                        return (
-                          <div key={`postsection-${index1}-${index2}`}>
-                            <div dangerouslySetInnerHTML={{ __html: section.value }} />
-                            <hr />
-                          </div>
-                        );
-                      case "twitter":
-                        return (
-                          <div
-                            className="has-text-centered"
-                            key={`postsection-${index1}-${index2}`}
-                          >
-                            <TwitterTweetEmbed
-                              tweetId={section.value}
-                              options={{ align: "center" }}
-                            />
-                            <hr />
-                          </div>
-                        );
-                      case "youtube":
-                        return (
-                          <div
-                            className="has-text-centered"
-                            ref={this.youtubeDiv}
-                            key={`postsection-${index1}-${index2}`}
-                          >
-                            <iframe
-                              title={`postsection-${index1}-${index2}`}
-                              width={this.state.youtubeWidth}
-                              height={0.5625 * this.state.youtubeWidth}
-                              src={`https://www.youtube.com/embed/${section.value}`}
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                            />
-                          </div>
-                        );
-                      case "image":
-                        return (
-                          <div
-                            key={`postsection-${index1}-${index2}`}
-                            className="has-text-centered"
-                          >
-                            <img src={section.value} alt="Δεν βρέθηκε η εικόνα..." width="600" />
-                            <hr />
-                          </div>
-                        );
-                      default:
-                        return null;
-                    }
-                  })}
+                  <div>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          post.sections
+                            .find(section => section.type === "text")
+                            .value.substring(0, 400) + "...</p>"
+                      }}
+                    />
+                    <Link to={`/${post.id}`}>Διαβάστε το άρθρο</Link>
+                    <hr />
+                  </div>
                 </div>
               </div>
             </section>

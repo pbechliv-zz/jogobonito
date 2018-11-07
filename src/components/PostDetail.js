@@ -17,7 +17,7 @@ class PostDetail extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.posts !== this.state.posts && this.state.posts.length > 0) {
+    if (prevState.post !== this.state.post) {
       this.setState({ youtubeWidth: this.getYoutubeWidth() });
     }
   }
@@ -36,6 +36,16 @@ class PostDetail extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribe();
+  }
+
+  getYoutubeWidth() {
+    const width = this.youtubeDiv.current.clientWidth;
+    console.log(width);
+    if (width > 400) {
+      return width * 0.6;
+    } else {
+      return width;
+    }
   }
 
   render() {
