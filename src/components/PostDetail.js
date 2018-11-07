@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 import firebase from "../firebase";
 
@@ -48,6 +49,19 @@ class PostDetail extends React.Component {
     }
   }
 
+  async deletePost() {
+    try {
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(this.props.match.params.postId)
+        .delete();
+      alert(`${this.state.post.title} successfully deleted`);
+    } catch (e) {
+      alert(`Error ${e.status} - ${e.message}`);
+    }
+  }
+
   render() {
     return (
       <div>
@@ -60,6 +74,11 @@ class PostDetail extends React.Component {
         </section>
         <section className="section container">
           <div className="box">
+            {this.props.authUser && (
+              <button className="button is-danger" onClick={() => this.deletePost()}>
+                Delete Post
+              </button>
+            )}
             <div className="content">
               <div className="has-text-centered">
                 <img src={this.state.post.titlePhoto} alt="Δεν βρέθηκε η εικόνα..." width="800" />
@@ -118,4 +137,10 @@ class PostDetail extends React.Component {
   }
 }
 
-export default PostDetail;
+const mapStateToProps = state => {
+  return {
+    authUser: state.authState.authUser
+  };
+};
+
+export default connect(mapStateToProps)(PostDetail);

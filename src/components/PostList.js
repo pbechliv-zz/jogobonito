@@ -1,5 +1,4 @@
 import React from "react";
-import { TwitterTweetEmbed } from "react-twitter-embed";
 import { Link } from "react-router-dom";
 import firebase from "../firebase";
 
