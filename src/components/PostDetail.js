@@ -17,7 +17,7 @@ class PostDetail extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.post !== this.state.post) {
+    if (prevState.post !== this.state.post && this.youtubeDiv.current) {
       this.setState({ youtubeWidth: this.getYoutubeWidth() });
     }
   }
