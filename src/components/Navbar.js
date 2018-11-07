@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import firebase from "../firebase";
+import logo from "../assets/facebook_cover_photo_1.png";
 
 class Navbar extends React.Component {
   state = {
@@ -23,8 +24,13 @@ class Navbar extends React.Component {
         <nav className="navbar is-fixed-top is-dark">
           <div className="container">
             <div className="navbar-brand">
-              <NavLink activeClassName="is-active" to="/" exact className="navbar-item">
-                Jogo Bonito
+              <NavLink
+                activeClassName="is-active"
+                to="/"
+                exact
+                className="navbar-item"
+              >
+                <img className="navbar-logo" src={logo} alt="Jogo Bonito" />
               </NavLink>
               <div
                 role="button"
