@@ -1,8 +1,9 @@
 import React from "react";
 import { TwitterTweetEmbed } from "react-twitter-embed";
+import { Link } from "react-router-dom";
 import firebase from "../firebase";
 
-class Home extends React.Component {
+class PostList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,13 +23,11 @@ class Home extends React.Component {
     const firestore = firebase.firestore();
     this.unsubscribe = firestore
       .collection("posts")
-      .orderBy("createdAt", "asc")
+      .orderBy("createdAt", "desc")
       .onSnapshot(ref => {
-        console.log(ref.docs);
-        const data = ref.docs.map(snap => snap.data());
+        const data = ref.docs.map(snap => ({ id: snap.id, ...snap.data() }));
         this.setState({ posts: data });
       });
-    console.log(this.youtubeDiv.current);
   }
 
   componentWillUnmount() {
@@ -59,27 +58,31 @@ class Home extends React.Component {
           this.state.posts.map((post, index1) => (
             <section key={`post-${index1}`} className="section container">
               <div className="box">
-                <div className="content has-text-centered">
-                  <img src={post.titlePhoto} alt="Δεν βρέθηκε η εικόνα..." width="800" />
-                  <h3 className="title">{post.title}</h3>
+                <div className="content">
+                  <div className="has-text-centered">
+                    <img src={post.titlePhoto} alt="Δεν βρέθηκε η εικόνα..." width="800" />
+                    <Link to={`/${post.id}`}>
+                      <h3 className="title">{post.title}</h3>
+                    </Link>
+                  </div>
+
                   <hr />
                   {post.sections.map((section, index2) => {
                     switch (section.type) {
                       case "text":
                         return (
-                          <>
-                            <div
-                              key={`postsection-${index1}-${index2}`}
-                              dangerouslySetInnerHTML={{ __html: section.value }}
-                            />
+                          <div key={`postsection-${index1}-${index2}`}>
+                            <div dangerouslySetInnerHTML={{ __html: section.value }} />
                             <hr />
-                          </>
+                          </div>
                         );
                       case "twitter":
                         return (
-                          <div key={`postsection-${index1}-${index2}`}>
+                          <div
+                            className="has-text-centered"
+                            key={`postsection-${index1}-${index2}`}
+                          >
                             <TwitterTweetEmbed
-                              key={`postsection-${index1}-${index2}`}
                               tweetId={section.value}
                               options={{ align: "center" }}
                             />
@@ -88,7 +91,11 @@ class Home extends React.Component {
                         );
                       case "youtube":
                         return (
-                          <div ref={this.youtubeDiv} key={`postsection-${index1}-${index2}`}>
+                          <div
+                            className="has-text-centered"
+                            ref={this.youtubeDiv}
+                            key={`postsection-${index1}-${index2}`}
+                          >
                             <iframe
                               title={`postsection-${index1}-${index2}`}
                               width={this.state.youtubeWidth}
@@ -102,15 +109,13 @@ class Home extends React.Component {
                         );
                       case "image":
                         return (
-                          <>
-                            <img
-                              key={`postsection-${index1}-${index2}`}
-                              src={section.value}
-                              alt="Δεν βρέθηκε η εικόνα..."
-                              width="600"
-                            />
+                          <div
+                            key={`postsection-${index1}-${index2}`}
+                            className="has-text-centered"
+                          >
+                            <img src={section.value} alt="Δεν βρέθηκε η εικόνα..." width="600" />
                             <hr />
-                          </>
+                          </div>
                         );
                       default:
                         return null;
@@ -128,4 +133,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+export default PostList;

@@ -4,7 +4,8 @@ import { Switch, Route, withRouter } from "react-router-dom";
 import firebase from "./firebase";
 import Navbar from "./components/Navbar";
 import Admin from "./components/Admin";
-import Home from "./components/Home";
+import PostList from "./components/PostList";
+import PostDetail from "./components/PostDetail";
 import { setAuthUser } from "./store/actions";
 
 class App extends Component {
@@ -19,7 +20,8 @@ class App extends Component {
       <Navbar match={this.props.match}>
         <Switch>
           <Route path="/admin" exact component={Admin} />
-          <Route path="/" exact component={Home} />]
+          <Route path="/" exact component={PostList} />]
+          <Route path="/:postId" exact component={PostDetail} />
         </Switch>
       </Navbar>
     );
