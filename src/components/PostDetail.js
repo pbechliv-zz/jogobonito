@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { TwitterTweetEmbed } from "react-twitter-embed";
+import MetaTags from "react-meta-tags";
 import firebase from "../firebase";
 
 class PostDetail extends React.Component {
@@ -23,20 +25,19 @@ class PostDetail extends React.Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const firestore = firebase.firestore();
-    this.unsubscribe = firestore
+    const post = await firestore
       .collection("posts")
       .doc(this.props.match.params.postId)
-      .onSnapshot(ref => {
-        console.log(ref.data());
-        // const data = ref.
-        this.setState({ post: ref.data() });
-      });
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
+      .get();
+    const postData = post.data();
+    console.log(postData);
+    this.setState({ post: postData });
+    firestore
+      .collection("posts")
+      .doc(this.props.match.params.postId)
+      .set({ hitCounter: (postData.hitCounter || 0) + 1 }, { merge: true });
   }
 
   getYoutubeWidth() {
@@ -65,7 +66,27 @@ class PostDetail extends React.Component {
   render() {
     return (
       <div>
-        <section className="hero is-primary">
+        <MetaTags>
+          <title>{this.state.post.title}</title>
+          <meta name="description" content={this.state.post.title} />
+          <meta property="og:title" content={this.state.post.title} />
+          <meta property="og:image" content={this.state.post.titlePhoto} />
+        </MetaTags>
+        <Link to="/">
+          <section className="hero is-info">
+            <div className="hero-body" style={{ padding: "15px 7px" }}>
+              <div
+                style={{ height: "30px", width: "100%" }}
+                className="container  has-text-centered"
+              >
+                <h1 style={{ fontSize: "1.5rem" }} className="has-text-white">
+                  Ολα τα άρθρα
+                </h1>
+              </div>
+            </div>
+          </section>
+        </Link>
+        <section className="hero is-primary is-bold">
           <div className="hero-body">
             <div className="container has-text-centered">
               <h3 className="title">{this.state.post.title}</h3>
@@ -75,9 +96,14 @@ class PostDetail extends React.Component {
         <section className="section container">
           <div className="box">
             {this.props.authUser && (
-              <button className="button is-danger" onClick={() => this.deletePost()}>
-                Delete Post
-              </button>
+              <>
+                <button className="button is-danger" onClick={() => this.deletePost()}>
+                  Delete Post
+                </button>
+                <span style={{ float: "right" }}>
+                  views: {this.state.post.hitCounter ? this.state.post.hitCounter : "0"}
+                </span>
+              </>
             )}
             <div className="content">
               <div className="has-text-centered">
