@@ -32,7 +32,6 @@ class PostDetail extends React.Component {
       .doc(this.props.match.params.postId)
       .get();
     const postData = post.data();
-    console.log(postData);
     this.setState({ post: postData });
     firestore
       .collection("posts")
@@ -42,7 +41,6 @@ class PostDetail extends React.Component {
 
   getYoutubeWidth() {
     const width = this.youtubeDiv.current.clientWidth;
-    console.log(width);
     if (width > 400) {
       return width * 0.6;
     } else {
@@ -73,11 +71,11 @@ class PostDetail extends React.Component {
           <meta property="og:image" content={this.state.post.titlePhoto} />
         </MetaTags>
         <Link to="/">
-          <section className="hero is-info">
+          <section className="hero is-dark">
             <div className="hero-body" style={{ padding: "15px 7px" }}>
               <div
                 style={{ height: "30px", width: "100%" }}
-                className="container  has-text-centered"
+                className="container has-text-centered"
               >
                 <h1 style={{ fontSize: "1.5rem" }} className="has-text-white">
                   Ολα τα άρθρα
@@ -86,8 +84,8 @@ class PostDetail extends React.Component {
             </div>
           </section>
         </Link>
-        <section className="hero is-primary is-bold">
-          <div className="hero-body">
+        <section className="hero is-primary">
+          <div className="hero-body" style={{ padding: "30px 15px" }}>
             <div className="container has-text-centered">
               <h3 className="title">{this.state.post.title}</h3>
             </div>

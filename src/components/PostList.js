@@ -29,7 +29,7 @@ class PostList extends React.Component {
     return (
       <div>
         <section className="hero is-primary">
-          <div className="hero-body">
+          <div className="hero-body"  style={{ padding: "15px 7px" }}>
             <div className="container has-text-centered">
               <h3 className="title">Τελευταία άρθρα</h3>
             </div>
@@ -41,12 +41,15 @@ class PostList extends React.Component {
               <div className="box">
                 <div className="content">
                   <div className="has-text-centered">
-                    <img src={post.titlePhoto} alt="Δεν βρέθηκε η εικόνα..." width="800" />
+                    <img
+                      src={post.titlePhoto}
+                      style={{ maxHeight: "250px" }}
+                      alt="Δεν βρέθηκε η εικόνα..."
+                    />
                     <Link to={`/${post.id}`}>
                       <h3 className="title">{post.title}</h3>
                     </Link>
                   </div>
-
                   <hr />
                   <div>
                     <div
